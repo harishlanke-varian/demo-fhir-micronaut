@@ -1,0 +1,68 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.micronaut.application") version "4.3.2"
+    id("io.micronaut.aot") version "4.3.2"
+}
+
+version = "0.1"
+group = "com.harish"
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.micronaut.io" }
+}
+
+dependencies {
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    compileOnly("io.micronaut:micronaut-http-client")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("io.micronaut:micronaut-http-client")
+    // https://mvnrepository.com/artifact/io.micronaut.servlet/micronaut-servlet-bom
+    implementation group: 'io.micronaut.servlet', name: 'micronaut-servlet-engine', version: '4.5.0'
+    implementation group: "ca.uhn.hapi.fhir", name: "hapi-fhir-base", version: "6.4.4"
+    implementation group: 'ca.uhn.hapi.fhir', name: 'hapi-fhir-server', version: '6.4.4'
+    implementation group: "ca.uhn.hapi.fhir", name: "hapi-fhir-structures-r4", version: "6.4.4"
+    implementation group: "ca.uhn.hapi.fhir", name: "hapi-fhir-validation", version: "6.4.4"
+    implementation group: "ca.uhn.hapi.fhir", name: "hapi-fhir-validation-resources-r4", version: "6.4.4"
+    // https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
+    compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+    implementation group: 'io.micronaut', name: 'micronaut-management', version: '4.3.5'
+
+
+}
+
+
+application {
+    mainClass.set("com.harish.Application")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
+
+
+graalvmNative.toolchainDetection = false
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.harish.*")
+    }
+    aot {
+    // Please review carefully the optimizations enabled below
+    // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+    }
+}
+
+
+
